@@ -6,10 +6,13 @@ spring:
     url: jdbc:mysql://34.50.60.106:3306/achievement_db?serverTimezone=Asia/Seoul
     username: grow_user
     password: Grow1234!
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
+
+    show-sql: true
 
     properties:
       hibernate:

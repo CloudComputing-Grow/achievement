@@ -1,0 +1,40 @@
+package com.grow.achievement.controller;
+
+import com.grow.achievement.dto.request.HarvestEventRequest;
+import com.grow.achievement.dto.response.AchievementListResponse;
+import com.grow.achievement.dto.response.AchievementSummaryResponse;
+import com.grow.achievement.dto.response.SuccessResponse;
+import com.grow.achievement.service.AchievementService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+public class AchievementController {
+
+    private final AchievementService achievementService;
+
+    @GetMapping("/achievements")
+    public AchievementListResponse getAchievements() {
+
+        Long userId = 1L;
+
+        return achievementService.getAchievements(userId);
+    }
+
+    @GetMapping("/achievements/summary")
+    public AchievementSummaryResponse getSummary() {
+
+        Long userId = 1L;
+
+        return achievementService.getSummary(userId);
+    }
+
+    @PostMapping("/internal/achievements")
+    public SuccessResponse updateAchievement(
+            @RequestBody HarvestEventRequest request
+    ) {
+
+        return achievementService.updateAchievement(request);
+    }
+}
