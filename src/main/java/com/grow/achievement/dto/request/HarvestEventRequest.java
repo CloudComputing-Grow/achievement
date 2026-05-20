@@ -9,6 +9,8 @@ import lombok.Setter;
 public class HarvestEventRequest {
 
     private Long userId;
+
     private Long itemId;
+
     private AchievementType type;
 }

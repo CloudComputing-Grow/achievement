@@ -5,10 +5,13 @@ import com.grow.achievement.dto.response.*;
 import com.grow.achievement.entity.AchievementItem;
 import com.grow.achievement.entity.UserAchievement;
 import com.grow.achievement.entity.UserAchievementSummary;
+import com.grow.achievement.entity.enums.AchievementType;
 import com.grow.achievement.repository.AchievementItemRepository;
 import com.grow.achievement.repository.UserAchievementRepository;
 import com.grow.achievement.repository.UserAchievementSummaryRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +36,12 @@ public class AchievementService {
         List<AchievementItemResponse> items = allItems.stream()
                 .map(item -> {
 
-                    boolean achieved = userAchievementRepository
-                            .existsByUserIdAndAchievementItem_Id(userId, item.getId());
+                    boolean achieved =
+                            userAchievementRepository
+                                    .existsByUserIdAndAchievementItem_Id(
+                                            userId,
+                                            item.getId()
+                                    );
 
                     return AchievementItemResponse.builder()
                             .itemId(item.getId())
@@ -51,7 +58,8 @@ public class AchievementService {
         int totalCount = allItems.size();
 
         int achievedCount =
-                (int) userAchievementRepository.countByUserIdAndIsAchievedTrue(userId);
+                (int) userAchievementRepository
+                        .countByUserIdAndIsAchievedTrue(userId);
 
         double completionRate =
                 totalCount == 0
@@ -90,63 +98,77 @@ public class AchievementService {
     @Transactional
     public SuccessResponse updateAchievement(HarvestEventRequest request) {
 
-        boolean exists =
-                userAchievementRepository.existsByUserIdAndAchievementItem_Id(
-                        request.getUserId(),
-                        request.getItemId()
-                );
+        if (request.getType() != AchievementType.HARVEST) {
 
-        if (exists) {
             return SuccessResponse.builder()
-                    .success(true)
+                    .success(false)
                     .build();
         }
 
         AchievementItem item =
                 achievementItemRepository.findById(request.getItemId())
-                        .orElseThrow();
+                        .orElseThrow(
+                                () -> new RuntimeException("아이템 없음")
+                        );
 
-        UserAchievement achievement =
-                UserAchievement.builder()
-                        .userId(request.getUserId())
-                        .achievementItem(item)
-                        .isAchieved(true)
-                        .type(request.getType())
-                        .achievedAt(LocalDateTime.now())
-                        .build();
+        boolean alreadyExists =
+                userAchievementRepository
+                        .existsByUserIdAndAchievementItem_Id(
+                                request.getUserId(),
+                                item.getId()
+                        );
 
-        userAchievementRepository.save(achievement);
+        if (!alreadyExists) {
 
-        updateSummary(request.getUserId());
+            UserAchievement achievement =
+                    UserAchievement.builder()
+                            .userId(request.getUserId())
+                            .achievementItem(item)
+                            .isAchieved(true)
+                            .type(AchievementType.HARVEST)
+                            .achievedAt(LocalDateTime.now())
+                            .build();
+
+            userAchievementRepository.save(achievement);
+        }
+
+        long achievedCount =
+                userAchievementRepository
+                        .countByUserIdAndIsAchievedTrue(
+                                request.getUserId()
+                        );
+
+        long totalCount =
+                achievementItemRepository.count();
+
+        double completionRate =
+                totalCount == 0
+                        ? 0
+                        : ((double) achievedCount / totalCount) * 100;
+
+        UserAchievementSummary summary =
+                summaryRepository.findById(request.getUserId())
+                        .orElse(
+                                UserAchievementSummary.builder()
+                                        .userId(request.getUserId())
+                                        .build()
+                        );
+
+        summary.setAchievedCount((int) achievedCount);
+
+        summary.setTotalCount((int) totalCount);
+
+        summary.setCompletionRate(
+                BigDecimal.valueOf(completionRate)
+                        .setScale(2, RoundingMode.HALF_UP)
+        );
+
+        summary.setUpdatedAt(LocalDateTime.now());
+
+        summaryRepository.save(summary);
 
         return SuccessResponse.builder()
                 .success(true)
                 .build();
-    }
-
-    private void updateSummary(Long userId) {
-
-        int totalCount =
-                (int) achievementItemRepository.count();
-
-        int achievedCount =
-                (int) userAchievementRepository.countByUserIdAndIsAchievedTrue(userId);
-
-        BigDecimal completionRate =
-                totalCount == 0
-                        ? BigDecimal.ZERO
-                        : BigDecimal.valueOf(
-                        (achievedCount * 100.0) / totalCount
-                ).setScale(2, RoundingMode.HALF_UP);
-
-        UserAchievementSummary summary =
-                UserAchievementSummary.builder()
-                        .userId(userId)
-                        .totalCount(totalCount)
-                        .achievedCount(achievedCount)
-                        .completionRate(completionRate)
-                        .build();
-
-        summaryRepository.save(summary);
     }
 }

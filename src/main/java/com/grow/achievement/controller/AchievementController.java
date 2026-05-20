@@ -5,7 +5,10 @@ import com.grow.achievement.dto.response.AchievementListResponse;
 import com.grow.achievement.dto.response.AchievementSummaryResponse;
 import com.grow.achievement.dto.response.SuccessResponse;
 import com.grow.achievement.service.AchievementService;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,10 +34,12 @@ public class AchievementController {
     }
 
     @PostMapping("/internal/achievements")
-    public SuccessResponse updateAchievement(
+    public ResponseEntity<SuccessResponse> updateAchievement(
             @RequestBody HarvestEventRequest request
     ) {
 
-        return achievementService.updateAchievement(request);
+        return ResponseEntity.ok(
+                achievementService.updateAchievement(request)
+        );
     }
 }
