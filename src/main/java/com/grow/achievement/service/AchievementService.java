@@ -39,7 +39,9 @@ public class AchievementService {
                     return AchievementItemResponse.builder()
                             .itemId(item.getId())
                             .name(item.getName())
+                            .fruitName(item.getFruitName())
                             .category(item.getCategory())
+                            .harvestLevel(item.getHarvestLevel())
                             .imageUrl(item.getImageUrl())
                             .isAchieved(achieved)
                             .build();
