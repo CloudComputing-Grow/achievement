@@ -9,6 +9,8 @@ import lombok.Getter;
 public class RepresentativeBadgeResponse {
 
     private Long badgeId;
+
     private String name;
+
     private AchievementCategory category;
 }

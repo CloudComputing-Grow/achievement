@@ -11,7 +11,10 @@ import java.time.LocalDateTime;
 public class BadgeResponse {
 
     private Long badgeId;
+
     private String name;
+
     private AchievementCategory category;
+
     private LocalDateTime achievedAt;
 }

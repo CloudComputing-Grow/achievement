@@ -42,4 +42,30 @@ public class AchievementController {
                 achievementService.updateAchievement(request)
         );
     }
+
+    @GetMapping("/achievements/badges")
+    public BadgeListResponse getBadges(
+            @RequestHeader("X-User-Id") Long userId
+    ) {
+        return achievementService.getBadges(userId);
+    }
+
+    @GetMapping("/achievements/badges/representative")
+    public RepresentativeBadgeResponse getRepresentativeBadge(
+            @RequestHeader("X-User-Id") Long userId
+    ) {
+        return achievementService.getRepresentativeBadge(userId);
+    }
+
+    @PutMapping("/achievements/badges/representative")
+    public SuccessResponse updateRepresentativeBadge(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestBody RepresentativeBadgeRequest request
+    ) {
+        return achievementService.updateRepresentativeBadge(
+                userId,
+                request
+        );
+    }
+
 }
