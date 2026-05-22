@@ -51,7 +51,7 @@ public class AchievementService {
                             .category(item.getCategory())
                             .harvestLevel(item.getHarvestLevel())
                             .imageUrl(item.getImageUrl())
-                            .isAchieved(achieved)
+                            .achieved(achieved)
                             .build();
                 })
                 .toList();
