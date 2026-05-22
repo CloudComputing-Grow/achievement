@@ -1,6 +1,7 @@
 package com.grow.achievement.dto.response;
 
 import com.grow.achievement.entity.enums.AchievementCategory;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,5 +21,6 @@ public class AchievementItemResponse {
 
     private String imageUrl;
 
-    private boolean isAchieved;
+    @JsonProperty("isAchieved")
+    private boolean achieved;
 }
