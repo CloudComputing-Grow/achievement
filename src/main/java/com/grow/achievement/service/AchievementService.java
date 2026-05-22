@@ -342,4 +342,37 @@ public class AchievementService {
                 .message(randomMessage.getMessage())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public MessageResponse getMessage(Long userId) {
+
+        UserAchievementSummary summary =
+                summaryRepository.findById(userId)
+                        .orElseThrow(
+                                () -> new RuntimeException("요약 정보 없음")
+                        );
+
+        int rate = summary.getCompletionRate().intValue();
+
+        List<EncouragementMessage> messages =
+                encouragementMessageRepository
+                        .findByMinRateLessThanEqualAndMaxRateGreaterThanEqual(
+                                rate,
+                                rate
+                        );
+
+        if (messages.isEmpty()) {
+            throw new RuntimeException("문구 없음");
+        }
+
+        int randomIndex =
+                (int) (Math.random() * messages.size());
+
+        EncouragementMessage message =
+                messages.get(randomIndex);
+
+        return MessageResponse.builder()
+                .message(message.getMessage())
+                .build();
+    }
 }

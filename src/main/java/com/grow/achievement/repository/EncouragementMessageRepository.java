@@ -8,8 +8,9 @@ import java.util.List;
 public interface EncouragementMessageRepository
         extends JpaRepository<EncouragementMessage, Long> {
 
-    List<EncouragementMessage> findByMinRateLessThanEqualAndMaxRateGreaterThanEqual(
-            int rate,
+    List<EncouragementMessage>
+    findByMinRateLessThanEqualAndMaxRateGreaterThanEqual(
+            int rate1,
             int rate2
     );
 }
