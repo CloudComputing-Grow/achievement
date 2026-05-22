@@ -1,9 +1,10 @@
 package com.grow.achievement.controller;
 
 import com.grow.achievement.dto.request.HarvestEventRequest;
-import com.grow.achievement.dto.response.AchievementListResponse;
-import com.grow.achievement.dto.response.AchievementSummaryResponse;
-import com.grow.achievement.dto.response.SuccessResponse;
+import com.grow.achievement.dto.request.RepresentativeBadgeRequest;
+
+import com.grow.achievement.dto.response.*;
+
 import com.grow.achievement.service.AchievementService;
 
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class AchievementController {
     public BadgeListResponse getBadges(
             @RequestHeader("X-User-Id") Long userId
     ) {
+
         return achievementService.getBadges(userId);
     }
 
@@ -54,18 +56,27 @@ public class AchievementController {
     public RepresentativeBadgeResponse getRepresentativeBadge(
             @RequestHeader("X-User-Id") Long userId
     ) {
+
         return achievementService.getRepresentativeBadge(userId);
     }
 
     @PutMapping("/achievements/badges/representative")
-    public SuccessResponse updateRepresentativeBadge(
+    public RepresentativeBadgeUpdateResponse updateRepresentativeBadge(
             @RequestHeader("X-User-Id") Long userId,
             @RequestBody RepresentativeBadgeRequest request
     ) {
+
         return achievementService.updateRepresentativeBadge(
                 userId,
                 request
         );
     }
 
+    @GetMapping("/achievements/message")
+    public MessageResponse getMessage(
+            @RequestHeader("X-User-Id") Long userId
+    ) {
+
+        return achievementService.getEncouragementMessage(userId);
+    }
 }
