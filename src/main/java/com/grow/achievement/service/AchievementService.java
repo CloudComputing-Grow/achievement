@@ -9,7 +9,8 @@ import com.grow.achievement.entity.enums.AchievementType;
 import com.grow.achievement.repository.AchievementItemRepository;
 import com.grow.achievement.repository.UserAchievementRepository;
 import com.grow.achievement.repository.UserAchievementSummaryRepository;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -64,7 +65,11 @@ public class AchievementService {
         double completionRate =
                 totalCount == 0
                         ? 0
-                        : (achievedCount * 100.0) / totalCount;
+                        : BigDecimal.valueOf(
+                                (achievedCount * 100.0) / totalCount
+                        )
+                        .setScale(2, RoundingMode.HALF_UP)
+                        .doubleValue();
 
         return AchievementListResponse.builder()
                 .totalCount(totalCount)
