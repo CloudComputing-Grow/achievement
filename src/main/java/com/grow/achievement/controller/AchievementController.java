@@ -2,13 +2,9 @@ package com.grow.achievement.controller;
 
 import com.grow.achievement.dto.request.HarvestEventRequest;
 import com.grow.achievement.dto.request.RepresentativeBadgeRequest;
-
 import com.grow.achievement.dto.response.*;
-
 import com.grow.achievement.service.AchievementService;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,17 +15,17 @@ public class AchievementController {
     private final AchievementService achievementService;
 
     @GetMapping("/achievements")
-    public AchievementListResponse getAchievements() {
-
-        Long userId = 1L;
+    public AchievementListResponse getAchievements(
+            @RequestHeader("X-User-Id") Long userId
+    ) {
 
         return achievementService.getAchievements(userId);
     }
 
     @GetMapping("/achievements/summary")
-    public AchievementSummaryResponse getSummary() {
-
-        Long userId = 1L;
+    public AchievementSummaryResponse getSummary(
+            @RequestHeader("X-User-Id") Long userId
+    ) {
 
         return achievementService.getSummary(userId);
     }
