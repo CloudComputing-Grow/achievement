@@ -115,6 +115,13 @@ public class AchievementService {
                     .build();
         }
 
+        if (request.getItemId() == 1L) {
+
+            return SuccessResponse.builder()
+                    .success(false)
+                    .build();
+        }
+
         AchievementItem item =
                 achievementItemRepository.findById(request.getItemId())
                         .orElseThrow(

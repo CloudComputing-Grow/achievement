@@ -3,9 +3,9 @@ spring:
     name: achievement
 
   datasource:
-    url: jdbc:mysql://34.50.60.106:3306/achievement_db?serverTimezone=Asia/Seoul
-    username: grow_user
-    password: Grow1234!
+    url: jdbc:mysql://${DB_HOST:34.50.60.106}:${DB_PORT:3306}/${DB_NAME:achievement_db}?serverTimezone=Asia/Seoul
+    username: ${DB_USER:grow_user}
+    password: ${DB_PASSWORD:Grow1234!}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -19,4 +19,4 @@ spring:
         format_sql: true
 
 server:
-  port: 3002
+  port: ${SERVER_PORT:3002}
