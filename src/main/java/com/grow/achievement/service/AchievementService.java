@@ -192,42 +192,56 @@ public class AchievementService {
 
     private void grantBadgeIfEligible(Long userId) {
 
-        UserAchievementSummary summary =
-                summaryRepository.findById(userId)
-                        .orElseThrow();
+        long normalCount =
+                userAchievementRepository
+                        .countByUserIdAndIsAchievedTrueAndAchievementItem_Category(
+                                userId,
+                                AchievementCategory.NORMAL
+                        );
 
-        double completionRate =
-                summary.getCompletionRate().doubleValue();
+        long goldCount =
+                userAchievementRepository
+                        .countByUserIdAndIsAchievedTrueAndAchievementItem_Category(
+                                userId,
+                                AchievementCategory.GOLD
+                        );
 
-        List<Badge> badges =
-                badgeRepository.findAll();
-
-        for (Badge badge : badges) {
-
-            boolean alreadyOwned =
-                    userBadgeRepository
-                            .existsByUserIdAndBadge_Id(
-                                    userId,
-                                    badge.getId()
-                            );
-
-            if (alreadyOwned) {
-                continue;
-            }
-
-            if (completionRate >= badge.getRequiredRate()) {
-
-                UserBadge userBadge =
-                        UserBadge.builder()
-                                .userId(userId)
-                                .badge(badge)
-                                .isRepresentative(false)
-                                .achievedAt(LocalDateTime.now())
-                                .build();
-
-                userBadgeRepository.save(userBadge);
-            }
+        if (normalCount >= 8) {
+            grantBadge(userId, 1L);
         }
+
+        if (goldCount >= 8) {
+            grantBadge(userId, 2L);
+        }
+    }
+
+    private void grantBadge(Long userId, Long badgeId) {
+
+        boolean alreadyOwned =
+                userBadgeRepository.existsByUserIdAndBadge_Id(
+                        userId,
+                        badgeId
+                );
+
+        if (alreadyOwned) {
+            return;
+        }
+
+        Badge badge =
+                badgeRepository.findById(badgeId)
+                        .orElseThrow(
+                                () -> new RuntimeException("휘장 없음")
+                        );
+
+        UserBadge userBadge =
+                UserBadge.builder()
+                        .userId(userId)
+                        .badge(badge)
+                        .isRepresentative(false)
+                        .achievedAt(LocalDateTime.now())
+                        .build();
+
+        userBadgeRepository.save(userBadge);
     }
 
     @Transactional(readOnly = true)
@@ -263,22 +277,25 @@ public class AchievementService {
             Long userId
     ) {
 
-        UserBadge representativeBadge =
-                userBadgeRepository
-                        .findByUserIdAndIsRepresentativeTrue(userId)
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "대표 휘장 없음"
-                                )
-                        );
+        return userBadgeRepository
+                .findByUserIdAndIsRepresentativeTrue(userId)
+                .map(userBadge -> {
 
-        Badge badge = representativeBadge.getBadge();
+                    Badge badge = userBadge.getBadge();
 
-        return RepresentativeBadgeResponse.builder()
-                .badgeId(badge.getId())
-                .name(badge.getName())
-                .category(badge.getCategory())
-                .build();
+                    return RepresentativeBadgeResponse.builder()
+                            .badgeId(badge.getId())
+                            .name(badge.getName())
+                            .category(badge.getCategory())
+                            .build();
+                })
+                .orElse(
+                        RepresentativeBadgeResponse.builder()
+                                .badgeId(0L)
+                                .name(null)
+                                .category(null)
+                                .build()
+                );
     }
 
     @Transactional

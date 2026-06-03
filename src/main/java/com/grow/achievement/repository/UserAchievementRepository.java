@@ -1,6 +1,7 @@
 package com.grow.achievement.repository;
 
 import com.grow.achievement.entity.UserAchievement;
+import com.grow.achievement.entity.enums.AchievementCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -21,4 +22,9 @@ public interface UserAchievementRepository extends JpaRepository<UserAchievement
     );
 
     long countByUserIdAndIsAchievedTrue(Long userId);
+
+    long countByUserIdAndIsAchievedTrueAndAchievementItem_Category(
+            Long userId,
+            AchievementCategory category
+    );
 }
