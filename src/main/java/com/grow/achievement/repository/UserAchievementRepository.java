@@ -16,6 +16,8 @@ public interface UserAchievementRepository extends JpaRepository<UserAchievement
             Long achievementItemId
     );
 
+    void deleteByUserId(Long userId);
+
     boolean existsByUserIdAndAchievementItem_Id(
             Long userId,
             Long achievementItemId

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grow-achievement-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: achievement
+  template:
+    metadata:
+      labels:
+        app: achievement
+    spec:
+      containers:
+        - name: achievement
+          image: yeonju7547/grow-achievement:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3002
+          envFrom:
+            - secretRef:
+                name: grow-achievement-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: achievement
+spec:
+  type: ClusterIP
+  selector:
+    app: achievement
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002

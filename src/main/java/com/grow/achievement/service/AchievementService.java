@@ -399,4 +399,11 @@ public class AchievementService {
                 .message(message.getMessage())
                 .build();
     }
+
+    @Transactional
+    public void deleteUserAchievementData(Long userId) {
+        userBadgeRepository.deleteByUserId(userId);
+        userAchievementRepository.deleteByUserId(userId);
+        summaryRepository.deleteById(userId);
+    }
 }

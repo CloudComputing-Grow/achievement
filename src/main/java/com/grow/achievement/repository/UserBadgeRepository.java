@@ -11,6 +11,8 @@ public interface UserBadgeRepository
 
     List<UserBadge> findByUserId(Long userId);
 
+    void deleteByUserId(Long userId);
+
     Optional<UserBadge> findByUserIdAndIsRepresentativeTrue(
             Long userId
     );
